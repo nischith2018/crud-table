@@ -1,0 +1,106 @@
+<div>
+  <h2>Angular CRUD Table</h2>
+  <div class="search">
+    <input type="text" [(ngModel)]="searchData" />
+    <button
+      [ngClass]="enableSearch?'search-button':'searchdisable'"
+      [disabled]="!enableSearch"
+      (click)="search()"
+    >
+      search
+    </button>
+    <button class="clear" (click)="clearsearch()">clear search</button>
+  </div>
+  <form [formGroup]="createForm">
+    <table id="employees">
+      <tr>
+        <!--Iterating Table title-->
+        <th *ngFor="let col of columns; trackBy:titles">
+          {{col.title}}
+        </th>
+      </tr>
+      <!-- Iterating input data -->
+      <tr *ngFor="let data of inputData; trackBy:inputs">
+        <ng-container>
+          <td *ngFor="let col of columns; trackBy:titles">
+            <ng-container *ngIf="data.userid !== crud.updateData?.userid">
+              <ng-container *ngIf="col.data !== '' && col.title !== 'Actions'">
+                {{getData(data,col.data)}}
+              </ng-container>
+              <ng-container>
+                <button
+                  class="primary-button"
+                  *ngIf="col.title === 'Actions'"
+                  (click)="edit(data)"
+                >
+                  Edit
+                </button>
+                <button
+                  class="primary-button"
+                  *ngIf="col.title === 'Actions'"
+                  (click)="delete(data.userid)"
+                >
+                  Delete
+                </button>
+              </ng-container>
+            </ng-container>
+
+            <button
+              class="primary-button"
+              *ngIf="col.title === 'Actions' && crud.isUpdate && data.userid === crud.updateData?.userid"
+              (click)="update()"
+            >
+              Update
+            </button>
+            <button
+              class="primary-button"
+              *ngIf="col.title === 'Actions' && crud.isUpdate && data.userid === crud.updateData?.userid"
+              (click)="cancel()"
+            >
+              Cancel
+            </button>
+
+            <!--  Edit data row -->
+            <ng-container *ngIf="data.userid === crud.updateData?.userid">
+              <ng-container *ngIf="col.data === 'userid'">
+                {{data.userid}}
+              </ng-container>
+              <ng-container
+                *ngIf="col.data !== 'userid' && col.data !== 'Actions'"
+              >
+                <input type="text" formControlName="{{col.data}}" />
+              </ng-container>
+            </ng-container>
+          </td>
+        </ng-container>
+      </tr>
+      <!-- Creating new row -->
+      <tr>
+        <ng-container *ngIf="crud?.isCreate">
+          <td *ngFor="let col of columns">
+            <input
+              type="text"
+              *ngIf="col.title !== 'Actions' && col.title !== 'ID'"
+              formControlName="{{col.data}}"
+            />
+            <button
+              class="primary-button"
+              *ngIf="col.title === 'Actions'"
+              (click)="create()"
+            >
+              Create
+            </button>
+          </td>
+        </ng-container>
+      </tr>
+    </table>
+
+    <button
+      (click)="add()"
+      [ngClass]="crud.isUpdate || crud.isCreate?'disabledbutton':'primary-button'"
+      [disabled]="crud.isUpdate || crud.isCreate"
+    >
+      Add
+    </button>
+  </form>
+</div>
